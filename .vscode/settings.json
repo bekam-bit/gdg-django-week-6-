@@ -1,0 +1,4 @@
+{
+  "python.terminal.useEnvFile": true,
+  "python.envFile": "${workspaceFolder}/Django-gdg-project/my_first_project/lmsProject/.env"
+}
