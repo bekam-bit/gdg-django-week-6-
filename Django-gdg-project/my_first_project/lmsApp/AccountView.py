@@ -17,9 +17,9 @@ def _redirect_by_role(user):
     # Centralize dashboard routing to keep login views consistent.
     if user.role == "member":
         return redirect("member_dashboard")
-    if user.role == "staff":
+    if user.role == "staff" or user.is_staff:
         return redirect("staff_dashboard")
-    if user.role == "admin":
+    if user.role == "admin" or user.is_superuser:
         return redirect("admin_dashboard")
     return redirect("login")
 
@@ -76,7 +76,21 @@ def loginRoleView(request, role):
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
-            if user.role != role:
+            if role == "staff" and not (user.role == "staff" or user.is_staff):
+                return _render_login(
+                    request,
+                    role=role,
+                    role_label=role_label,
+                    error=f"This account is not a {role_label} account.",
+                )
+            if role == "admin" and not (user.role == "admin" or user.is_superuser):
+                return _render_login(
+                    request,
+                    role=role,
+                    role_label=role_label,
+                    error=f"This account is not a {role_label} account.",
+                )
+            if role == "member" and user.role != "member":
                 return _render_login(
                     request,
                     role=role,
