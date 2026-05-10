@@ -13,6 +13,12 @@ __pycache__/
 # SQLite DB (keep out of repo)
 db.sqlite3
 
+# Collected static files
+my_first_project/lmsProject/staticfiles/
+
 # Exclude unrelated folders
 my_first_app/
 "to do app"/
+
+# Exclude root data files
+todos.json
