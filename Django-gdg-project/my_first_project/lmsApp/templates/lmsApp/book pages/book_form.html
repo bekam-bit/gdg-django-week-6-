@@ -1,0 +1,16 @@
+{% extends "lmsApp/base.html" %} 
+{% load static %}
+
+{% block title %}Add Book{% endblock %} 
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'Styles/book_form.css' %}" />
+{% endblock %}
+
+{%block content %}
+<h2>Add Book</h2>
+<form method="POST" class="book-form">
+  {% csrf_token %} {{ form.as_p }}
+  <button type="submit">Save Book</button>
+</form>
+{% endblock %}

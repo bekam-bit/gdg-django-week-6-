@@ -1,0 +1,27 @@
+.error-page {
+  text-align: center;
+  padding: 40px 20px;
+  background: linear-gradient(135deg, #ffffff 0%, #f3f6ff 100%);
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(17, 24, 39, 0.06);
+}
+
+.error-page h1 {
+  font-size: 64px;
+  margin: 0;
+}
+
+.home-link {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: #2d6cdf;
+  color: #fff;
+  font-weight: 600;
+}
+
+.home-link:hover {
+  background: #1f56b5;
+}

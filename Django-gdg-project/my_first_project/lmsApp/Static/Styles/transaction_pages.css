@@ -1,0 +1,57 @@
+/* Shared styling for transaction pages */
+.transaction-page {
+  display: block;
+}
+
+.transaction-page .page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.transaction-page h3 {
+  margin-bottom: 6px;
+}
+
+.transaction-page .card {
+  border-radius: 14px;
+}
+
+.transaction-page .card-header {
+  font-weight: 600;
+}
+
+.transaction-page .card-body {
+  display: grid;
+  gap: 16px;
+}
+
+.transaction-page .alert {
+  border-radius: 12px;
+}
+
+.transaction-page .list-group-item {
+  border-radius: 12px;
+}
+
+.transaction-page .pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.transaction-page .center-stack {
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+}
+
+@media (max-width: 640px) {
+  .transaction-page .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

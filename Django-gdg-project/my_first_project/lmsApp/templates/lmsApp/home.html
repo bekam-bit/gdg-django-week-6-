@@ -1,0 +1,51 @@
+{% extends 'lmsApp/base.html' %}
+{% load static %}
+
+{% block title %}Choose Profile | LMS{% endblock %}
+
+{% block extra_css %}
+	<link rel="stylesheet" href="{% static 'Styles/home.css' %}" />
+{% endblock %}
+
+{% block content %}
+	<section class="role-hero">
+		<div class="role-hero__text">
+			<p class="role-hero__eyebrow">Library Management System</p>
+			<h1>Select your profile</h1>
+			<p class="role-hero__lead">
+				Pick a role to continue. Members can register or sign in. Staff and admins
+				go straight to their secure login.
+			</p>
+		</div>
+	</section>
+
+	<section class="role-grid" aria-label="Profile selection">
+		<article class="role-card">
+			<div class="role-card__icon" aria-hidden="true">M</div>
+			<h2>Member</h2>
+			<p>Browse books, request loans, and manage your account.</p>
+			<div class="role-card__actions">
+				<a class="btn" href="{% url 'login_member' %}">Member Login</a>
+				<a class="btn secondary" href="{% url 'register' %}">Register</a>
+			</div>
+		</article>
+
+		<article class="role-card">
+			<div class="role-card__icon role-card__icon--staff" aria-hidden="true">S</div>
+			<h2>Staff</h2>
+			<p>Approve loan requests and manage daily lending.</p>
+			<div class="role-card__actions">
+				<a class="btn" href="{% url 'login_staff' %}">Staff Login</a>
+			</div>
+		</article>
+
+		<article class="role-card">
+			<div class="role-card__icon role-card__icon--admin" aria-hidden="true">A</div>
+			<h2>Admin</h2>
+			<p>Oversee staff, policies, and system-wide settings.</p>
+			<div class="role-card__actions">
+				<a class="btn" href="{% url 'login_admin' %}">Admin Login</a>
+			</div>
+		</article>
+	</section>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "lmsApp/base.html" %}
+{% load static %}
+
+{% block title %}Admin Dashboard | LMS{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'Styles/home.css' %}" />
+{% endblock %}
+
+{% block navbar %}
+  <header class="navbar">
+    <div class="container">
+      <nav class="nav-links">
+        <a href="{% url 'home-role' %}">Home</a>
+        <a href="{% url 'book_add' %}">Add Book</a>
+        <a href="{% url 'loan_request_list' %}">Staff Requests</a>
+        <a href="/admin/">Admin Panel</a>
+        <a href="{% url 'logout' %}">Logout</a>
+      </nav>
+    </div>
+  </header>
+{% endblock %}
+
+{% block content %}
+  <div class="hero">
+    <h1>Welcome, Admin</h1>
+    <p>Manage staff, policies, and system-wide settings.</p>
+  </div>
+  <section class="grid">
+    <div class="card">
+      <h3>Add a new book</h3>
+      <p>Update the catalog and manage inventory.</p>
+      <a class="btn" href="{% url 'book_add' %}">Add Book</a>
+    </div>
+    <div class="card">
+      <h3>Staff requests</h3>
+      <p>Review and manage loan requests.</p>
+      <a class="btn" href="{% url 'loan_request_list' %}">Staff Requests</a>
+    </div>
+    <div class="card">
+      <h3>Admin panel</h3>
+      <p>Open Django admin for advanced controls.</p>
+      <a class="btn secondary" href="/admin/">Open Admin Panel</a>
+    </div>
+  </section>
+{% endblock %}

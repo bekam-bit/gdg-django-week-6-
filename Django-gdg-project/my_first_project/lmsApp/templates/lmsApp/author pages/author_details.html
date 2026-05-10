@@ -1,0 +1,28 @@
+{% extends "lmsApp/base.html" %}
+{% load static %}
+
+{% block title %}Book Detail{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'Styles/author_details.css' %}" />
+{% endblock %}
+
+{% block content %}
+<h2>Book Details</h2>
+
+<div class="book-detail">
+    <p><strong>Author Name:</strong> {{ author.author_name }}</p>
+    <p><strong>Author Email:</strong> {{ author.author_email }}</p>
+    <p><strong>Author Bio:</strong> {{ author.author_bio }}</p>
+    <p><strong>Books:</strong></p>
+    <ul>
+        {% for book in author.books.all %}
+        <a href="{% url 'book_detail' book.book_id %}"><li>{{ book.title }}</li></a>
+        {% endfor %}
+    </ul>
+    <div class="detail-actions">
+        <button type="button" class="back-link" data-url="{% url 'author_list' %}" onclick="window.location.href=this.dataset.url;">View All Authors</button>
+    </div>
+  
+</div>
+{% endblock %}

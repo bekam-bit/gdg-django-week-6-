@@ -1,0 +1,73 @@
+/* Page-specific styling for loan request form */
+.loan-request-form {
+  display: block;
+}
+
+.loan-request-form .form-shell {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.loan-request-form .page-header {
+  text-align: left;
+  margin-bottom: 18px;
+}
+
+.loan-request-form .form-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+  padding: 20px;
+}
+
+.loan-request-form .form-meta {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 16px;
+  color: var(--muted);
+}
+
+.loan-request-form .form-meta p {
+  margin: 0;
+}
+
+.loan-request-form .form-meta strong {
+  color: var(--text);
+}
+
+.loan-request-form .policy-card {
+  border-radius: 12px;
+  border: 1px dashed var(--border);
+  background: #f8fafc;
+}
+
+.loan-request-form .form-section {
+  display: grid;
+  gap: 14px;
+}
+
+.loan-request-form .form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.loan-request-form .form-actions .btn {
+  min-width: 180px;
+}
+
+.loan-request-form .button-row {
+  margin-top: 6px;
+}
+
+@media (max-width: 640px) {
+  .loan-request-form .form-card {
+    padding: 16px;
+  }
+
+  .loan-request-form .form-actions .btn {
+    width: 100%;
+  }
+}

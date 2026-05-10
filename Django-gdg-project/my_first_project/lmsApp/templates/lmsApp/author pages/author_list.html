@@ -1,0 +1,43 @@
+{% extends "lmsApp/base.html" %} 
+{% load static %}
+
+{% block title %}Author List{% endblock %} 
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'Styles/author_list.css' %}" />
+{% endblock %}
+
+{% block content %}
+<h2>Authors list</h2>
+{% if authors %}
+<table class="author-table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Bio</th>
+        </tr>
+    </thead>
+        <tbody>
+            {% for author in authors %}
+            <tr>
+                <td>{{author.author_id}}</td>
+                <td>{{author.author_name}}</td>
+                <td>{{author.author_email}}</td>
+                <td>{{author.author_bio}}</td>
+                <td>
+                <button type="button" class="details-link" data-url="{% url 'author_details' author.author_id %}" onclick="window.location.href = this.dataset.url">
+                    View Details
+                </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+</table>
+
+{% else %}
+<p>No books found.</p>
+{% endif %}
+
+{% endblock %}

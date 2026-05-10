@@ -1,0 +1,28 @@
+{% extends "lmsApp/base.html" %}
+{% load static %}
+
+{% block title %}Book Detail{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'Styles/book_detail.css' %}" />
+{% endblock %}
+
+{% block content %}
+<h2>Book Details</h2>
+
+<div class="book-detail">
+    <p><strong>ISBN:</strong> {{ book.ISBN }}</p>
+    <p><strong>Title:</strong> {{ book.title }}</p>
+    <a href="{% url 'author_details' book.author.author_id %}"><p><strong>Author:</strong> {{ book.author }}</p></a>
+    <p><strong>Total Copies:</strong> {{ book.total_copies }}</p>
+    <p><strong>Available Copies:</strong> {{ book.available_copies }}</p>
+    <p><strong>Publication Date:</strong> {{ book.publication_date }}</p>
+    <p><strong>Category:</strong> {{ book.category.all|join:", " }}</p>
+
+    <div class="detail-actions">
+        <button type="button" class="edit-link" data-url="{% url 'book_update' book.book_id %}" onclick="window.location.href=this.dataset.url;">Edit</button>
+        <button type="button" class="delete-link" data-url="{% url 'book_delete' book.book_id %}" onclick="window.location.href=this.dataset.url;">Delete</button>
+        <button type="button" class="back-link" data-url="{% url 'book_list' %}" onclick="window.location.href=this.dataset.url;">Back to list</button>
+    </div>
+</div>
+{% endblock %}

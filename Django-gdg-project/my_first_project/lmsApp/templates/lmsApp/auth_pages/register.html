@@ -1,0 +1,71 @@
+{% extends "lmsApp/base.html" %}
+{% load static %}
+
+{% block title %}Member Registration | LMS{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'Styles/auth.css' %}" />
+{% endblock %}
+
+{% block content %}
+  <section class="auth-shell">
+    <div class="auth-card">
+      <div class="auth-header">
+        <p class="auth-eyebrow">Join the Library</p>
+        <h1>Member Registration</h1>
+        <p class="auth-subtitle">Create your account to start borrowing.</p>
+      </div>
+
+      {% if form.non_field_errors %}
+        <div class="auth-alert">
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      <form method="post" class="auth-form">
+        {% csrf_token %}
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="{{ form.username.id_for_label }}">Username</label>
+            {{ form.username }}
+            {{ form.username.errors }}
+          </div>
+          <div class="form-field">
+            <label for="{{ form.member_name.id_for_label }}">Full name</label>
+            {{ form.member_name }}
+            {{ form.member_name.errors }}
+          </div>
+          <div class="form-field">
+            <label for="{{ form.email.id_for_label }}">Email</label>
+            {{ form.email }}
+            {{ form.email.errors }}
+          </div>
+          <div class="form-field">
+            <label for="{{ form.department.id_for_label }}">Department</label>
+            {{ form.department }}
+            {{ form.department.errors }}
+          </div>
+          <div class="form-field">
+            <label for="{{ form.dorm.id_for_label }}">Dorm</label>
+            {{ form.dorm }}
+            {{ form.dorm.errors }}
+          </div>
+          <div class="form-field">
+            <label for="{{ form.password.id_for_label }}">Password</label>
+            {{ form.password }}
+            {{ form.password.errors }}
+          </div>
+          <div class="form-field">
+            <label for="{{ form.password_confirm.id_for_label }}">Confirm password</label>
+            {{ form.password_confirm }}
+            {{ form.password_confirm.errors }}
+          </div>
+        </div>
+
+        <button class="btn" type="submit">Create Account</button>
+      </form>
+
+      <p class="auth-footer">Already registered? <a href="{% url 'login_member' %}">Sign in</a>.</p>
+    </div>
+  </section>
+{% endblock %}

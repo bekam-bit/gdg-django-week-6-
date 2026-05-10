@@ -1,0 +1,77 @@
+{% extends "lmsApp/base.html" %}
+{% load static %}
+
+{% block title %}Book List{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'Styles/book_list.css' %}" />
+{% endblock %}
+
+{% block content %}
+<h2>Books list</h2>
+{% if books %}
+<table class="book-table">
+  <thead>
+    <tr>
+      <th>ISBN</th>
+      <th>Title</th>
+      <th>Author</th>
+      <th>Available Copies</th>
+      <th>Actions</th>
+      <th>Loan</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for book in books %}
+    <tr>
+      <td>{{book.ISBN}}</td>
+      <td>{{book.title}}</td>
+      <td>
+        <a href="{% url 'author_details' book.author.author_id %}">{{book.author}}</a>
+      </td>
+      <td>{{book.available_copies}}</td>
+      <td>
+        <div class="detail-actions">
+          <button
+            type="button"
+            class="details-link"
+            data-url="{% url 'book_detail' book.book_id %}"
+            onclick="window.location.href = this.dataset.url"
+          >
+            View Details
+          </button>
+          <button
+            type="button"
+            class="edit-link"
+            data-url="{% url 'book_update' book.book_id %}"
+            onclick="window.location.href = this.dataset.url"
+          >
+            Edit
+          </button>
+          <button
+            type="button"
+            class="delete-link"
+            data-url="{% url 'book_delete' book.book_id %}"
+            onclick="window.location.href = this.dataset.url"
+          >
+            Delete
+          </button>
+        </div>
+      </td>
+      <td>
+        {% if book.book_id in applied_book_ids %}
+        <button type="button" class="btn btn-secondary" disabled>Applied</button>
+        {% else %}
+        <a href="{% url 'loan_request' book.book_id %}">Apply for Loan</a>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% else %}
+<p>No books found.</p>
+{% endif %}
+
+{% endblock %}

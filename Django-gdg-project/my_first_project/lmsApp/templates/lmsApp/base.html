@@ -1,0 +1,28 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}LMS{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'Styles/main.css' %}" />
+    {% block extra_css %}{% endblock %}
+  </head>
+  <body>
+    {% block navbar %}{% endblock %}
+
+    <main class="container">
+      {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+      {% endif %}
+      {% block content %}{% endblock %}
+    </main>
+    <footer class="footer">
+      <p>&copy; 2026 LMS App</p>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,18 @@
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Local env files
+.env
+
+# SQLite DB (keep out of repo)
+db.sqlite3
+
+# Exclude unrelated folders
+my_first_app/
+"to do app"/

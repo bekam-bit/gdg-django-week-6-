@@ -1,0 +1,39 @@
+{% extends "lmsApp/base.html" %}
+{% load static %}
+
+{% block title %}{{ role_label }} Login | LMS{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'Styles/auth.css' %}" />
+{% endblock %}
+
+{% block content %}
+  <section class="auth-shell">
+    <div class="auth-card">
+      <div class="auth-header">
+        <p class="auth-eyebrow">Secure Access</p>
+        <h1>{{ role_label }} Login</h1>
+        <p class="auth-subtitle">Sign in to continue to your dashboard.</p>
+      </div>
+
+      {% if error %}
+        <div class="auth-alert">{{ error }}</div>
+      {% endif %}
+
+      <form method="post" class="auth-form">
+        {% csrf_token %}
+        <label for="id_username">Username</label>
+        <input id="id_username" name="username" type="text" autocomplete="username" required />
+
+        <label for="id_password">Password</label>
+        <input id="id_password" name="password" type="password" autocomplete="current-password" required />
+
+        <button class="btn" type="submit">Login</button>
+      </form>
+
+      {% if role == 'member' %}
+        <p class="auth-footer">New here? <a href="{% url 'register' %}">Create a member account</a>.</p>
+      {% endif %}
+    </div>
+  </section>
+{% endblock %}

@@ -1,0 +1,211 @@
+/* Shared styling for loan + notification pages */
+.loan-page {
+  display: block;
+}
+
+.loan-page .page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.loan-page h2 {
+  font-size: clamp(1.6rem, 2vw + 1rem, 2.2rem);
+  margin-bottom: 8px;
+}
+
+.loan-page .page-subtitle {
+  color: var(--muted);
+  margin: 0;
+}
+
+.loan-page h2 {
+  letter-spacing: -0.01em;
+}
+
+.loan-page .status-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.loan-page .status-toolbar .btn-group {
+  gap: 8px;
+}
+
+.loan-page .btn-group .btn {
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-weight: 600;
+}
+
+.loan-page .btn-group .btn.active {
+  box-shadow: 0 6px 14px rgba(37, 99, 235, 0.18);
+}
+
+.loan-page .card {
+  border-radius: 14px;
+}
+
+.loan-page .card-header {
+  font-weight: 600;
+}
+
+.loan-page .table-responsive {
+  border-radius: 14px;
+}
+
+.loan-page .table thead th {
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+}
+
+.loan-page .table {
+  font-size: 0.95rem;
+}
+
+.loan-page .badge {
+  font-weight: 700;
+}
+
+.loan-page .list-group-item {
+  border-radius: 12px;
+}
+
+.loan-page .alert {
+  border-radius: 12px;
+  border-width: 1px;
+}
+
+.loan-page .alert-info {
+  background: #e8f3ff;
+  border-color: #cfe4ff;
+  color: #1f3b63;
+}
+
+.loan-page .info-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+}
+
+.loan-page .info-banner .btn {
+  border-radius: 10px;
+}
+
+.loan-page .form-label {
+  font-weight: 600;
+}
+
+.loan-page .loan-form {
+  display: grid;
+  gap: 16px;
+}
+
+.loan-page .loan-form .form-check {
+  align-items: flex-start;
+}
+
+.loan-page .loan-form .form-check input {
+  width: 18px;
+  height: 18px;
+  margin-top: 4px;
+}
+
+.loan-page .policy-card {
+  border-radius: 12px;
+  border: 1px dashed var(--border);
+}
+
+.loan-page .action-stack {
+  display: grid;
+  gap: 10px;
+}
+
+.loan-page .section-spacer {
+  margin-top: 24px;
+}
+
+.loan-page .notification-list {
+  display: grid;
+  gap: 12px;
+}
+
+.loan-page .notification-item {
+  display: grid;
+  grid-template-columns: 10px 1fr auto;
+  gap: 12px;
+  align-items: start;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  background: var(--surface);
+}
+
+.loan-page .notification-item.is-unread {
+  border-color: var(--accent);
+}
+
+.loan-page .notification-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-top: 7px;
+  background: transparent;
+}
+
+.loan-page .notification-item.is-unread .notification-dot {
+  background: var(--accent);
+}
+
+.loan-page .notification-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.loan-page .status-text {
+  font-weight: 600;
+}
+
+.loan-page .status-text.is-unread {
+  color: var(--accent);
+}
+
+.loan-page .status-text.is-read {
+  color: var(--muted);
+}
+
+.loan-page .notification-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+@media (max-width: 640px) {
+  .loan-page .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .loan-page .notification-item {
+    grid-template-columns: 10px 1fr;
+  }
+
+  .loan-page .notification-actions {
+    grid-column: 2;
+    justify-content: flex-start;
+  }
+}

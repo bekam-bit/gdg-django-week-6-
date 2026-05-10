@@ -1,0 +1,191 @@
+{% extends "lmsApp/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'Styles/loan_pages.css' %}" />
+{% endblock %}
+
+{% block content %}
+<section class="loan-page">
+<div class="container mt-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+      Loan Request Details
+      <span class="text-muted">#{{ loan_request.loan_reqeust_id }}</span>
+    </h2>
+
+    <div>
+      {% if loan_request.status == 'PENDING' %}
+      <span class="badge bg-primary fs-6">Pending</span>
+      {% elif loan_request.status == 'APPROVED' %}
+      <span class="badge bg-success fs-6">Approved</span>
+      {% elif loan_request.status == 'REJECTED' %}
+      <span class="badge bg-danger fs-6">Rejected</span>
+      {% elif loan_request.status == 'EXPIRED' %}
+      <span class="badge bg-warning text-dark fs-6">Expired</span>
+      {% else %}
+      <span class="badge bg-secondary fs-6">{{ loan_request.status }}</span>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Request Information -->
+    <div class="col-md-8">
+      <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-light">
+          <h5 class="card-title mb-0">Request Information</h5>
+        </div>
+        <div class="card-body">
+          <div class="row mb-3">
+            <div class="col-sm-4 text-muted">
+              Requested Duration: {{ loan_request.requested_duration }} days
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-sm-4 text-muted">
+              Request Date: {{ loan_request.created_at|date:"F d, Y" }}
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-sm-4 text-muted">
+              Pickup Deadline: {% if loan_request.pickup_until %} {{ loan_request.pickup_until|date:"F d, Y" }} {% else %}
+              <span class="text-muted fst-italic">Not applicable</span>
+              {% endif %}
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-sm-4 text-muted">
+              Approval Date: {% if loan_request.approved_at %} {{ loan_request.approved_at|date:"F d, Y" }} {% else %}
+              <span class="text-muted fst-italic">Not yet approved</span>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="alert alert-secondary mt-3 mb-0">
+            <i class="bi bi-info-circle"></i>
+            Policy Agreement: {% if loan_request.agreed_to_policy %}
+            <span class="text-success fw-bold">Agreed</span>
+            {% else %}
+            <span class="text-danger fw-bold">Not Agreed</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Book Information -->
+      <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-light">
+          <h5 class="card-title mb-0">Book Details</h5>
+        </div>
+        <div class="card-body">
+          <h4 class="card-title text-primary">{{ loan_request.book.title }}</h4>
+          <p class="text-muted mb-2">ISBN: {{ loan_request.book.ISBN }}</p>
+          <div class="row">
+            <div class="col-md-6">
+              <p>
+                <strong>Author:</strong> {{ loan_request.book.author.author_name }}
+              </p>
+              <p>
+                <strong>Total Copies:</strong> {{ loan_request.book.total_copies }}
+              </p>
+            </div>
+            <div class="col-md-6">
+              <p>
+                <strong>Available Copies:</strong> {{ loan_request.book.available_copies }}
+              </p>
+              <p><strong>Location:</strong> {{ loan_request.book.location }}</p>
+            </div>
+          </div>
+          <a
+            href="{% url 'book_detail' loan_request.book.book_id %}"
+            class="btn btn-outline-primary btn-sm mt-2"
+            >View Book Page</a
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- Member Sidebar -->
+    <div class="col-md-4">
+      <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-light">
+          <h5 class="card-title mb-0">Member Info</h5>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">{{ loan_request.member.member_name }}</h5>
+          <p class="card-text text-muted mb-1">
+            {{ loan_request.member.email }}
+          </p>
+          <hr />
+          <p class="mb-1">
+            <strong>Role:</strong> {{ loan_request.member.role }}
+          </p>
+          <p class="mb-1">
+            <strong>Department:</strong> {{ loan_request.member.department }}
+          </p>
+          <p class="mb-1">
+            <strong>Dorm:</strong> {{ loan_request.member.dorm }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="card shadow-sm">
+        <div class="card-header bg-light">
+          <h5 class="card-title mb-0">Actions</h5>
+        </div>
+        <div class="card-body d-grid gap-2 action-stack">
+          {% if loan_request.status == 'PENDING' %}
+          <form
+            action="{% url 'loan_request_approve' loan_request.loan_reqeust_id %}"
+            method="post"
+          >
+            {% csrf_token %}
+            <button
+              type="submit"
+              class="btn btn-success w-100 mb-2"
+              onclick="return confirm('Confirm approval?');"
+            >
+              <i class="bi bi-check-circle"></i> Approve Request
+            </button>
+          </form>
+
+          <form
+            action="{% url 'loan_request_reject' loan_request.loan_reqeust_id %}"
+            method="post"
+          >
+            {% csrf_token %}
+            <button
+              type="submit"
+              class="btn btn-danger w-100"
+              onclick="return confirm('Confirm rejection?');"
+            >
+              <i class="bi bi-x-circle"></i> Reject Request
+            </button>
+          </form>
+          {% else %}
+          <div class="alert alert-info text-center">
+            This request is <strong>{{ loan_request.status|lower }}</strong> and
+            cannot be modified.
+          </div>
+          {% endif %}
+          
+          {% if unpaid_transaction %}
+            <a href="{% url 'fine_transaction' unpaid_transaction.transaction_id %}" class="btn btn-warning w-100 mb-2">
+                <i class="bi bi-cash-coin"></i> Process Fine Payment (${{ unpaid_transaction.amount }})
+            </a>
+          {% endif %}
+
+          <a
+            href="{% url 'loan_request_list' %}"
+            class="btn btn-outline-secondary mt-2"
+            >Back to List</a
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+{% endblock %}

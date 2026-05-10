@@ -1,0 +1,33 @@
+.book-detail {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 8px 20px rgba(17, 24, 39, 0.06);
+}
+
+.book-detail ul {
+  padding-left: 18px;
+  margin: 8px 0 0;
+}
+
+.book-detail ul li {
+  margin: 6px 0;
+}
+
+.detail-actions {
+  margin-top: 16px;
+}
+
+.back-link {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #2d6cdf;
+  background: transparent;
+  color: #2d6cdf;
+  cursor: pointer;
+}
+
+.back-link:hover {
+  background: rgba(45, 108, 223, 0.08);
+}

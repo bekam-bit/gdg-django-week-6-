@@ -1,0 +1,25 @@
+{% extends "lmsApp/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'Styles/loan_pages.css' %}" />
+{% endblock %}
+
+{% block content %}
+<section class="loan-page page-shell">
+<div class="container mt-5">
+        <div class="page-header">
+                <div>
+                        <h2>Loan Request Success</h2>
+                        <p class="page-subtitle">Your request is now in the review queue.</p>
+                </div>
+        </div>
+    <p>Your loan request has been submitted successfully.</p>
+    <p>Please wait for the library staff to review your request.</p>
+    <p>Thank you for using our library management system.</p>
+    <div class="section-spacer button-row">
+        <a href="{% url 'book_list' %}" class="btn btn-primary">Back to Book List</a>
+                <a href="{% url 'home-role' %}" class="btn btn-outline-secondary">Go to Home</a>
+    </div>
+</section>
+{% endblock %}

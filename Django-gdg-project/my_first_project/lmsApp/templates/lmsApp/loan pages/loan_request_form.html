@@ -1,0 +1,101 @@
+{% extends "lmsApp/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'Styles/loan_pages.css' %}" />
+<link rel="stylesheet" href="{% static 'Styles/loan_request_form.css' %}" />
+{% endblock %}
+
+{% block content %}
+<section class="loan-page loan-request-form page-shell">
+<div class="container mt-5">
+    <div class="form-shell">
+        <div class="page-header">
+            <div>
+                <h2>Loan Request Form</h2>
+                <p class="page-subtitle">Confirm the details and submit your request.</p>
+            </div>
+        </div>
+
+    <div class="form-meta">
+        {% if book %}
+            <p><strong>Book:</strong> {{ book.title }}</p>
+        {% endif %}
+
+        {% if book.author %}
+            <p><strong>Author:</strong> {{ book.author }}</p>
+        {% endif %}
+
+        {% if book.category %}
+            <p><strong>Category:</strong> {{ book.category.all|join:", " }}</p>
+        {% endif %}
+
+        {% if book.max_loan_duration %}
+            <p><strong>Max Loan Duration:</strong> {{ book.max_loan_duration }} days</p>
+        {% else %}
+            <p><strong>Max Loan Duration:</strong> Not specified</p>
+        {% endif %}
+
+        {% if member %}
+            <p><strong>Member:</strong> {{ member.member_name }}</p>
+        {% endif %}
+    </div>
+
+    <!-- Display non-field errors -->
+    {% if loan_request_form.non_field_errors %}
+        <div class="alert alert-danger">
+            {% for error in loan_request_form.non_field_errors %}
+                <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="post" class="loan-form form-card">
+        {% csrf_token %}
+        
+        <div class="mb-3 form-section">
+            <label for="{{ loan_request_form.requested_duration.id_for_label }}" class="form-label">Requested Duration (in days):</label>
+            {{ loan_request_form.requested_duration }}
+            
+            {% if loan_request_form.requested_duration.errors %}
+                <div class="text-danger">
+                    {{ loan_request_form.requested_duration.errors }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="card mb-3 p-3 bg-light policy-card" style="border: 1px solid #ddd; border-radius: 5px;">
+            <h5>Library Loan Policy</h5>
+            <p class="small text-muted">
+                By requesting this loan, you agree to return the book within the approved duration. 
+                Please ensure you handle the book with care. Late returns may result in fines or suspension of borrowing privileges. 
+                Lost or damaged books must be replaced or paid for by the borrower.
+            </p>
+            <p class="small text-muted">
+                <strong>Note:</strong> If you do not pick up the book within 3 days of approval, the loan request will be cancelled, requiring you to apply for the loan again.
+            </p>
+        </div>
+
+        <div class="mb-3 form-check">
+            {{ loan_request_form.agreed_to_policy }}
+            <label class="form-check-label" for="{{ loan_request_form.agreed_to_policy.id_for_label }}">
+                I have read and agree to the library policy
+            </label>
+            
+            {% if loan_request_form.agreed_to_policy.errors %}
+                <div class="text-danger">
+                    {{ loan_request_form.agreed_to_policy.errors }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Submit Loan Request</button>
+            <a href="{% url 'book_list' %}" class="btn btn-outline-secondary">Back to Book List</a>
+        </div>
+    </form>
+
+    </div>
+</div>
+</section>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "lmsApp/base.html" %}
+{% load static %}
+
+{% block title %}Member Dashboard | LMS{% endblock %}
+
+{% block extra_css %}
+	<link rel="stylesheet" href="{% static 'Styles/home.css' %}" />
+{% endblock %}
+
+{% block navbar %}
+	<header class="navbar">
+		<div class="container">
+			<nav class="nav-links">
+				<a href="{% url 'home-role' %}">Home</a>
+				<a href="{% url 'book_list' %}">Book List</a>
+				<a href="{% url 'notifications' %}">Notifications</a>
+				<a href="{% url 'logout' %}">Logout</a>
+			</nav>
+		</div>
+	</header>
+{% endblock %}
+
+{% block content %}
+	<div class="hero">
+		<h1>Welcome, {{ request.user.member.member_name }}</h1>
+		<p>Search books, request loans, and track your borrowing history.</p>
+	</div>
+	<section class="grid">
+		<div class="card">
+			<h3>Browse books</h3>
+			<p>See all available titles and loan options.</p>
+			<a class="btn" href="{% url 'book_list' %}">Book List</a>
+		</div>
+		<div class="card">
+			<h3>Notifications</h3>
+			<p>View due dates, approvals, and system alerts.</p>
+			<a class="btn secondary" href="{% url 'notifications' %}">View Notifications</a>
+		</div>
+	</section>
+{% endblock %}

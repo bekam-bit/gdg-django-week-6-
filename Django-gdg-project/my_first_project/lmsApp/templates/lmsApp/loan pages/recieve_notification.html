@@ -1,0 +1,55 @@
+{% extends "lmsApp/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'Styles/loan_pages.css' %}" />
+{% endblock %}
+
+{% block content %}
+<section class="loan-page">
+<div class="container mt-5">
+  <div class="page-header">
+    <div>
+      <h2>Notification Detail</h2>
+      <p class="page-subtitle">This notification is currently marked as {% if notification.is_read %}read{% else %}unread{% endif %}.</p>
+    </div>
+    <span class="badge {% if notification.is_read %}bg-secondary{% else %}bg-primary{% endif %} rounded-pill">
+      {% if notification.is_read %}Read{% else %}Unread{% endif %}
+    </span>
+  </div>
+  <div class="card">
+    <div class="card-header d-flex justify-content-between">
+      <h5 class="mb-0">
+        {% if notification.loan_request.status == 'APPROVED' %}
+        <span class="badge bg-success">Approved</span>
+        {% elif notification.loan_request.status == 'REJECTED' %}
+        <span class="badge bg-danger">Rejected</span>
+        {% elif notification.loan_request.status == 'EXPIRED' %}
+        <span class="badge bg-warning text-dark">Expired</span>
+        {% endif %} Loan Request #{{ notification.loan_request.pk }}
+      </h5>
+      <small>{{ notification.created_at|date:"F d, Y H:i" }}</small>
+    </div>
+    <div class="card-body">
+      <h6 class="card-subtitle mb-2 text-muted">
+        Book: {{ notification.loan_request.book.title }}
+      </h6>
+      <p class="card-text lead">{{ notification.message }}</p>
+
+      <form method="post" action="{% url 'toggle_notification_read' notification.notification_id %}" class="d-inline-block mt-2 me-2">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="{% if notification.is_read %}mark_unread{% else %}mark_read{% endif %}">
+        <input type="hidden" name="next" value="detail">
+        <button type="submit" class="btn btn-outline-secondary">
+          Mark as {% if notification.is_read %}Unread{% else %}Read{% endif %}
+        </button>
+      </form>
+
+      <a href="{% url 'notifications' %}" class="btn btn-primary mt-3"
+        >Back to Notifications</a
+      >
+    </div>
+  </div>
+</div>
+</section>
+{% endblock %}

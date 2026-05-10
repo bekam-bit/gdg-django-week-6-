@@ -1,0 +1,4 @@
+{
+  "python.terminal.useEnvFile": true,
+  "python.envFile": "${workspaceFolder}/my_first_project/lmsProject/.env"
+}

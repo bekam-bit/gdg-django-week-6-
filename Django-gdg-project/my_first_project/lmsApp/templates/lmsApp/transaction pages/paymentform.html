@@ -1,0 +1,76 @@
+{% extends "lmsApp/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'Styles/transaction_pages.css' %}" />
+{% endblock %}
+
+{% block content %}
+<section class="transaction-page">
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="card-title mb-0">Fine Payment Details</h3>
+                </div>
+                <div class="card-body">
+                    {% if transaction %}
+                    <div class="alert alert-warning">
+                        <h4 class="alert-heading">Overdue Loan Fine</h4>
+                        <p>This fine is for the overdue loan of <strong>{{ transaction.loan.book.title }}</strong>.</p>
+                        <hr>
+                        <p class="mb-0">Please review the details below and proceed with the payment.</p>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Payment Info</h5>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Current Fine Amount
+                                    <span class="badge bg-primary rounded-pill">${{ fine_amount|floatformat:2 }}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Daily Rate
+                                    <span class="badge bg-secondary rounded-pill">${{ transaction.daily_rate }}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Overdue Days
+                                    <span class="badge bg-danger rounded-pill">{{ overdue_days }} days</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Loan details</h5>
+                             <ul class="list-group list-group-flush">
+                                <li class="list-group-item"><strong>Member:</strong> {{ transaction.member.member_name }}</li>
+                                <li class="list-group-item"><strong>Due Date:</strong> {{ transaction.loan.due_date }}</li>
+                             </ul>
+                        </div>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <!-- Render the form fields manually or use as_p -->
+                        <!-- Assuming the payment form just confirms payment or takes an amount -->
+                         
+                        <div class="d-grid gap-2">
+                             <input type="hidden" name="amount" value="{{ fine_amount }}">
+                             <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-credit-card"></i> Pay Now (${{ fine_amount|floatformat:2 }})
+                            </button>
+                             <a href="{% url 'home' %}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                    {% else %}
+                        <div class="alert alert-info">Transaction not found or invalid.</div>
+                        <a href="{% url 'home' %}" class="btn btn-primary">Go Home</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+{% endblock %}

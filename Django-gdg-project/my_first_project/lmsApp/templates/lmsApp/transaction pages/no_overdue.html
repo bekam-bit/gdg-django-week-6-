@@ -1,0 +1,38 @@
+{% extends "lmsApp/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'Styles/transaction_pages.css' %}" />
+{% endblock %}
+
+{% block content %}
+<section class="transaction-page">
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-info">
+                <div class="card-header bg-info text-white">
+                    <h3 class="card-title mb-0">No Overdue Loans</h3>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        <i class="fas fa-thumbs-up text-info" style="font-size: 4rem;"></i>
+                    </div>
+                    <h4 class="card-title text-info">You're All Caught Up!</h4>
+                    <p class="card-text">You currently have no overdue loans or outstanding fines.</p>
+                    
+                    <div class="alert alert-light border mt-4">
+                        <p class="mb-0">Keep enjoying reading from our collection!</p>
+                    </div>
+
+                    <div class="mt-4">
+                        <a href="{% url 'home' %}" class="btn btn-primary">Back to Home</a>
+                        <a href="{% url 'book_list' %}" class="btn btn-outline-info">Browse More Books</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+{% endblock %}

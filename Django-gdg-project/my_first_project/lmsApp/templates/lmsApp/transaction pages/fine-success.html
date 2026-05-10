@@ -1,0 +1,46 @@
+{% extends "lmsApp/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'Styles/transaction_pages.css' %}" />
+{% endblock %}
+
+{% block content %}
+<section class="transaction-page">
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-success">
+                <div class="card-header bg-success text-white">
+                    <h3 class="card-title mb-0">Payment Successful</h3>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+                    </div>
+                    <h4 class="card-title text-success">Thank you!</h4>
+                    <p class="card-text">Your fine payment has been processed successfully.</p>
+                    
+                    {% if transaction %}
+                    <div class="alert alert-light border mt-4 text-start">
+                        <strong>Transaction Details:</strong>
+                        <ul class="list-unstyled mt-2">
+                            <li><strong>Book:</strong> {{ transaction.loan.book.title }}</li>
+                            <li><strong>Amount Paid:</strong> ${{ transaction.amount_paid|floatformat:2 }}</li>
+                            <li><strong>Date:</strong> {{ transaction.payment_date|date:"F j, Y, g:i a" }}</li>
+                            <li><strong>Transaction ID:</strong> #{{ transaction.transaction_id }}</li>
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <div class="mt-4">
+                        <a href="{% url 'home' %}" class="btn btn-primary">Back to Home</a>
+                        <a href="{% url 'book_list' %}" class="btn btn-outline-success">Browse Books</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+{% endblock %}
