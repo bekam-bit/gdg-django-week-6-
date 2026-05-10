@@ -1,121 +1,150 @@
 ﻿# University Library Management System (LMS)
 
-A Django-based Library Management System for handling book loans, loan requests, notifications, and fines with role-based dashboards.
+Deployed: https://gdg-django-week-6.onrender.com/
+
+A Django-based Library Management System that handles books, members, loans, loan requests, notifications, and fines, with role-based dashboards (member, staff, admin) and a JSON/REST API.
 
 ---
 
-## Key Features
-
-### Book, Author, and Member Management
-- Book inventory with availability tracking and categories.
-- Author and category browsing with HTML and JSON responses.
-- Member profiles linked to user accounts.
-
-### Loan Request Workflow
-1. **Request**: Member submits a request and duration. The system validates availability, limits, and policy agreement.
-2. **Review**: Staff approves or rejects requests. Approved requests get a pickup window.
-3. **Notification**: Members receive approval/rejection and overdue notifications.
-
-### Fines & Payments
-- Overdue checks generate notifications via a management command.
-- Fine payments update transaction status and can unlock borrowing.
+## Quick Links
+- Live deployment: https://gdg-django-week-6.onrender.com/
+- API root: `/api/v1/`
+- Admin: `/admin/`
 
 ---
 
-## Architecture & Diagrams
+## Overview
+LMS is built with Django and Django REST Framework to provide both HTML views and a RESTful API for library operations. It includes management commands for maintenance tasks and background workflows for loan expirations and overdue notifications.
 
-### System Architecture
-![System Architecture](docs/images/architecture_overview.png)
-
-### Class Diagram (Models)
-![Class Diagram](docs/images/class_diagram.png)
-
-### Loan Process Flowchart
-```mermaid
-graph TD
-    Start([User Requests Book]) --> Validate{Checks Pass?}
-    Validate -- No --> Reject[Reject Request]
-    Validate -- Yes --> Pending[Status: PENDING]
-    Pending --> StaffReview[Staff Review]
-    StaffReview -- Approve --> PickupSet[Status: APPROVED\nSet Pickup Window]
-    StaffReview -- Reject --> Reject
-    PickupSet --> PickedUp{Picked Up\nin Time?}
-    PickedUp -- No --> Expired[Request EXPIRED]
-    PickedUp -- Yes --> ActiveLoan[Create LOAN\nStatus: ACTIVE]
-    ActiveLoan --> CheckReturn{Returned?}
-    CheckReturn -- Yes --> Return[Status: RETURNED]
-    CheckReturn -- No --> CheckOverdue{Date > Due?}
-    CheckOverdue -- Yes --> Overdue[Status: OVERDUE]
-    Overdue --> Notify[Overdue Notification]
-```
+## Features
+- Book, author, and category management with availability tracking.
+- Loan request workflow (request → staff review → approve/reject → pickup → loan lifecycle).
+- Fine and transaction handling with payment endpoints.
+- Role-based dashboards and authentication (session + JWT).
+- Management commands for seeding data, creating roles, expiring pickups, and notifying overdue loans.
 
 ---
 
-## Workflows & Logic
+## Project Layout
+Top-level important folders and files (relative to repository root):
 
-### Loan Request Validation
-- Requested duration must be within the book's max loan duration.
-- Member cannot request a book with an active loan or pending/approved request.
-- Member must agree to the loan policy.
-- Requests are blocked when the member has overdue loans with unpaid fines.
+- `my_first_project/`
+  - `lmsProject/` — Django project configuration (settings, wsgi/asgi, urls)
+    - `manage.py` — Django management shim for this project
+    - `requirements.txt` — Python dependencies for this project
+    - `Procfile`, `render.yaml` — deployment config for Render
+  - `lmsApp/` — main application
+    - `models.py` — database models (`Book`, `User/Member`, `Loan`, `LoanRequest`, `Transaction`)
+    - `AccountView.py`, `bookViews.py`, `authorViews.py`, `memberLoanRequestViews.py`, `staffLoanRequestView.py` — view logic
+    - `api_views.py`, `api_urls.py` — REST API viewsets and routers
+    - `management/commands/` — cron/maintenance commands (seed data, expire loans, notify)
+    - `Static/` and `templates/` — static assets and templates
+- `docs/` — documentation and architecture diagrams
 
-### Staff Review
-- Approvals set `pickup_until` and `approved_at`.
-- Notifications are sent for approval and rejection.
-
-### Overdue Notifications
-- `notify_overdue` scans active loans past `due_date` and notifiemembers.
+(See the repository tree for full detail.)
 
 ---
 
-## Tech Stack & Setup
+## Environment & Configuration
+The project reads configuration from environment variables and a `.env` file when present. Important variables:
 
-- **Backend**: Django (Python)
-- **Database**: SQLite (Default)
-- **Frontend**: Django Templates, HTML/CSS
-- **API**: Django REST Framework (HTML + JSON renderers)
+- `SECRET_KEY` — Django secret key (required in production)
+- `DEBUG` — `true`/`false`
+- `DATABASE_URL` — optional PostgreSQL URL for production (if absent, defaults to SQLite)
+- `ALLOWED_HOSTS` — comma-separated hostnames
+- `CSRF_TRUSTED_ORIGINS` — trusted origins for CSRF
 
-### Installation
+---
+
+## Local Development Quickstart
+1. Clone the repo and create a virtual environment:
+
 ```bash
-# Clone the repository
 git clone <repo-url>
 cd Django-gdg-project
-
-# Install requirements (if available)
-# pip install -r requirements.txt
-
-# Apply database migrations
-python my_first_project/lmsProject/manage.py makemigrations
-python my_first_project/lmsProject/manage.py migrate
-
-# Create admin/staff accounts (optional helper command)
-python my_first_project/lmsProject/manage.py create_roles
-
-# Collect static assets for deployment
-python my_first_project/lmsProject/manage.py collectstatic --noinput
-
-# Run server
-python my_first_project/lmsProject/manage.py runserver
+python -m venv .venv
+source .venv/bin/activate  # macOS/Linux
+.\.venv\Scripts\Activate.ps1  # Windows PowerShell
 ```
 
-### Static Asset Setup
-- App styles and scripts live under `my_first_project/lmsApp/Static/`.
-- Production serves collected assets from `my_first_project/lmsProject/staticfiles/`.
-- WhiteNoise is configured to serve compressed, hashed static files after `collectstatic` runs.
+2. Install dependencies and set up the database:
 
-### Management Commands
-- `create_roles`: Creates or updates staff/admin accounts.
-- `expire_loans`: Expires approved requests past pickup window.
-- `notify_overdue`: Sends notifications for overdue active loans.
+```bash
+pip install -r my_first_project/lmsProject/requirements.txt
+cd my_first_project/lmsProject
+python manage.py migrate
+python manage.py create_roles   # optional: create default roles/users
+python manage.py collectstatic --noinput
+python manage.py runserver
+```
+
+3. Access the app at `http://127.0.0.1:8000/` and admin at `http://127.0.0.1:8000/admin/`.
+
+---
+
+## Deployment (Render)
+The Render configuration is provided in `my_first_project/lmsProject/render.yaml`. The build and start commands used on Render are:
+
+- Build: `pip install -r requirements.txt && python manage.py migrate && python manage.py collectstatic`
+- Start: `gunicorn lmsProject.wsgi:application --bind 0.0.0.0:$PORT --chdir /opt/render/project/src/Django-gdg-project/my_first_project/lmsProject`
+
+Ensure `SECRET_KEY` and `DATABASE_URL` (if using Postgres) are set in the Render environment.
 
 ---
 
-## Project Structure
-- `lmsApp/models.py`: Core database models (`Book`, `Member`, `Loan`, `LoanRequest`, `Transaction`).
-- `lmsApp/AccountView.py`: Auth + dashboard routing.
-- `lmsApp/bookViews.py`, `lmsApp/authorViews.py`: Book/author pages and API responses.
-- `lmsApp/memberLoanRequestViews.py`, `lmsApp/staffLoanRequestView.py`: Loan request lifecycle and staff tools.
-- `lmsApp/management/commands/`: Operational jobs for roles, expirations, and overdue notices.
+## API Documentation (Selected Endpoints)
+Base API path: `/api/v1/`
+
+Authentication:
+- `POST /api/token/` — Obtain JWT tokens (also available at `/api/v1/auth/token/`)
+  - Body: `{ "username": "<user>", "password": "<pass>" }`
+  - Response: `{ "access": "<jwt>", "refresh": "<jwt_refresh>" }`
+- `POST /api/token/refresh/` — Refresh access token
+
+Auth helpers (API):
+- `POST /api/v1/auth/register/` — Register a new user (see request fields in `lmsApp.api_views.register_api`)
+- `POST /api/v1/auth/login/` — Login via API (returns session info / token)
+
+Resource collections (list, create, retrieve, update, delete where supported):
+- `GET/POST /api/v1/authors/` — Authors
+- `GET/POST /api/v1/categories/` — Categories
+- `GET/POST /api/v1/books/` — Books
+- `GET/POST /api/v1/members/` — Members
+- `GET/POST /api/v1/loans/` — Loans
+- `GET/POST /api/v1/loan-requests/` — Loan requests
+- `GET/POST /api/v1/transactions/` — Transactions
+- `GET/POST /api/v1/notifications/` — Notifications
+
+Health and utility endpoints:
+- `GET /api/v1/health/` — Health check
+- `GET /api/v1/` — DRF browsable API root (lists routers)
+
+Example: get books with JWT
+
+```bash
+# obtain token
+curl -X POST https://gdg-django-week-6.onrender.com/api/token/ -d "username=admin&password=pass"
+# use token
+curl -H "Authorization: Bearer <access_token>" https://gdg-django-week-6.onrender.com/api/v1/books/
+```
+
+For exact field names and payloads, refer to the serializers defined in `lmsApp/serrializer.py` and viewset docstrings in `lmsApp/api_views.py`.
 
 ---
-This README reflects the current implementation and will evolve as features expand.
+
+## Management Commands
+- `python manage.py create_roles` — ensure default roles/users exist
+- `python manage.py seed_sample_data` — (if present) seed development data
+- `python manage.py expire_loans` — expire uncollected approvals
+- `python manage.py notify_overdue` — enqueue/send overdue notifications
+
+---
+
+## Contributing
+- Fork the repo, create a feature branch, and open a PR with a clear description.
+- Add tests for new behaviors and run `python manage.py test` where applicable.
+
+---
+
+## License & Contact
+See `LICENSE` at the repository root. For questions, open an issue or contact the maintainer.
