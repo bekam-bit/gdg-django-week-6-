@@ -40,7 +40,8 @@ def _deny_if_not_staff_or_admin(request):
 @api_view(['GET'])
 @renderer_classes([TemplateHTMLRenderer,JSONRenderer])
 def book_list(request):
-    books=Book.objects.all()
+    # Avoid N+1 queries by fetching author and categories with each book
+    books=Book.objects.all().select_related('author').prefetch_related('category')
     # Track books where the current member cannot re-apply yet.
     member = None
     if request.user.is_authenticated and hasattr(request.user, 'member'):
@@ -75,7 +76,8 @@ def book_list(request):
 @renderer_classes([TemplateHTMLRenderer,JSONRenderer])
 def book_details(request,book_id):
     try:
-        book=Book.objects.get(pk=book_id)
+        # Fetch related author and categories to avoid additional queries in the template
+        book=Book.objects.select_related('author').prefetch_related('category').get(pk=book_id)
     except Book.DoesNotExist:
         raise NotFound("Book Not Found")
     
