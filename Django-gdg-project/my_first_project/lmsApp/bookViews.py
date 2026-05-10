@@ -8,6 +8,7 @@ from rest_framework.renderers import TemplateHTMLRenderer,JSONRenderer
 from rest_framework.exceptions import NotFound
 from .models import Book,Member,LoanRequest,Loan
 from django.db.models import Q
+from django.db.models.deletion import ProtectedError
 from .serrializer import BookSerializer,LoanSerializer
 from .form import BookForm
 
@@ -143,18 +144,27 @@ def DeleteBook(request,book_id):
     except Book.DoesNotExist:
         raise NotFound("Book Not Found")
     
-    if request.method=="DELETE":
-        book.delete()
+    if request.method in ["DELETE", "POST"]:
+        try:
+            book.delete()
+        except ProtectedError:
+            if request.accepted_renderer.format == "html":
+                return Response(
+                    {
+                        "book": book,
+                        "error": "Cannot delete this book because it has active or past loans.",
+                    },
+                    template_name="lmsApp/book pages/confrim_delete.html",
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            return Response(
+                {
+                    "detail": "Cannot delete this book because it has related loans.",
+                },
+                status=status.HTTP_409_CONFLICT,
+            )
         
-        if request.accepted_renderer.format=="html":
-            return redirect('book_list')
-        
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    
-    if request.method=="POST":
-        book.delete()
-        
-        if request.accepted_renderer.format=="html":
+        if request.accepted_renderer.format == "html":
             return redirect('book_list')
         
         return Response(status=status.HTTP_204_NO_CONTENT)
