@@ -15,12 +15,12 @@ ROLE_LABELS = {
 
 def _redirect_by_role(user):
     # Centralize dashboard routing to keep login views consistent.
-    if user.role == "member":
-        return redirect("member_dashboard")
-    if user.role == "staff" or user.is_staff:
-        return redirect("staff_dashboard")
     if user.role == "admin" or user.is_superuser:
         return redirect("admin_dashboard")
+    if user.role == "staff" or user.is_staff:
+        return redirect("staff_dashboard")
+    if user.role == "member":
+        return redirect("member_dashboard")
     return redirect("login")
 
 

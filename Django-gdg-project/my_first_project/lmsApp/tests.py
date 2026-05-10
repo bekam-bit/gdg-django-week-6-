@@ -138,6 +138,23 @@ class LMSEndToEndTests(StaticLiveServerTestCase):
 		dashboard_response = self.client.get(reverse("staff_dashboard"))
 		self.assertEqual(dashboard_response.status_code, 200)
 
+	def test_staff_login_with_is_staff_flag(self):
+		User.objects.filter(username="staff_flag_user").delete()
+		staff_flag_user = User.objects.create_user(
+			username="staff_flag_user",
+			password="staff_flag_pass123",
+			role="member",
+			is_staff=True,
+		)
+		login_payload = {
+			"username": "staff_flag_user",
+			"password": "staff_flag_pass123",
+		}
+		response = self.client.post(reverse("login_staff"), login_payload, follow=True)
+		self.assertEqual(response.status_code, 200)
+		dashboard_response = self.client.get(reverse("staff_dashboard"))
+		self.assertEqual(dashboard_response.status_code, 200)
+
 	def test_api_health_and_login(self):
 		health_response = self.api_client.get(f"{self.live_server_url}/api/v1/health/")
 		self.assertEqual(health_response.status_code, 200)
