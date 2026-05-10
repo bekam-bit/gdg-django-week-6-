@@ -113,6 +113,14 @@ class Loan(models.Model):
         self.clean() # Enforce validation on save as well for scripted creation
         super().save(*args, **kwargs)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=["member", "status"]),
+            models.Index(fields=["book", "status"]),
+            models.Index(fields=["due_date", "status"]),
+            models.Index(fields=["member", "return_date"]),
+        ]
+
 class LoanRequest(models.Model):
     loan_reqeust_id=models.AutoField(primary_key=True)
     requested_duration=models.IntegerField()
@@ -136,6 +144,14 @@ class LoanRequest(models.Model):
 
     def __str__(self):
         return f"{self.member.member_name} sends a loan request for{self.book.book_title} "
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["member", "status"]),
+            models.Index(fields=["book", "status"]),
+            models.Index(fields=["status", "created_at"]),
+            models.Index(fields=["member", "book", "status"]),
+        ]
     
 class Transaction(models.Model):
     transaction_id=models.AutoField(primary_key=True)
@@ -156,6 +172,13 @@ class Transaction(models.Model):
     def __str__(self):
         return f"{self.member.member_name} -{self.transaction_id} - {self.amount}"
 
+    class Meta:
+        indexes = [
+            models.Index(fields=["member", "status"]),
+            models.Index(fields=["loan", "status"]),
+            models.Index(fields=["member", "created_at"]),
+        ]
+
 class Notification(models.Model):
     notification_id=models.AutoField(primary_key=True)
     member=models.ForeignKey(Member,on_delete=models.CASCADE,related_name='notifications')
@@ -166,6 +189,13 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"Notification for {self.member.member_name}"
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["member", "is_read"]),
+            models.Index(fields=["member", "created_at"]),
+            models.Index(fields=["loan_request", "created_at"]),
+        ]
 
 class User(AbstractUser):
     ROLE_CHOICES= (

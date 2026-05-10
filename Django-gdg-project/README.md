@@ -91,9 +91,17 @@ python my_first_project/lmsProject/manage.py migrate
 # Create admin/staff accounts (optional helper command)
 python my_first_project/lmsProject/manage.py create_roles
 
+# Collect static assets for deployment
+python my_first_project/lmsProject/manage.py collectstatic --noinput
+
 # Run server
 python my_first_project/lmsProject/manage.py runserver
 ```
+
+### Static Asset Setup
+- App styles and scripts live under `my_first_project/lmsApp/Static/`.
+- Production serves collected assets from `my_first_project/lmsProject/staticfiles/`.
+- WhiteNoise is configured to serve compressed, hashed static files after `collectstatic` runs.
 
 ### Management Commands
 - `create_roles`: Creates or updates staff/admin accounts.

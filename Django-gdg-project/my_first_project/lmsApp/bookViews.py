@@ -1,4 +1,5 @@
 from django.shortcuts import render,redirect
+from django.core.cache import cache
 from django.utils import timezone
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.response import Response
@@ -11,6 +12,11 @@ from django.db.models import Q
 from django.db.models.deletion import ProtectedError
 from .serrializer import BookSerializer,LoanSerializer
 from .form import BookForm
+
+
+BOOK_CACHE_VERSION_KEY = "lmsApp:books:version"
+BOOK_LIST_CACHE_TIMEOUT = 60
+BOOK_DETAIL_CACHE_TIMEOUT = 60
 
 
 def _is_staff_or_admin(user):
@@ -33,6 +39,42 @@ def _deny_if_not_staff_or_admin(request):
         status=status.HTTP_403_FORBIDDEN,
     )
 
+
+def _get_book_cache_version():
+    version = cache.get(BOOK_CACHE_VERSION_KEY)
+    if version is None:
+        cache.set(BOOK_CACHE_VERSION_KEY, 1, None)
+        return 1
+    return version
+
+
+def _book_cache_key(suffix):
+    return f"lmsApp:books:v{_get_book_cache_version()}:{suffix}"
+
+
+def _invalidate_book_cache():
+    cache.set(BOOK_CACHE_VERSION_KEY, _get_book_cache_version() + 1, None)
+
+
+def _cached_book_list():
+    return cache.get_or_set(
+        _book_cache_key("list"),
+        lambda: list(
+            Book.objects.all().select_related("author").prefetch_related("category")
+        ),
+        BOOK_LIST_CACHE_TIMEOUT,
+    )
+
+
+def _cached_book_detail(book_id):
+    return cache.get_or_set(
+        _book_cache_key(f"detail:{book_id}"),
+        lambda: Book.objects.select_related("author").prefetch_related("category").get(
+            pk=book_id
+        ),
+        BOOK_DETAIL_CACHE_TIMEOUT,
+    )
+
 # Create your views here.
 # def home(request):
 #     return render(request,'lmsApp/home.html')
@@ -41,7 +83,7 @@ def _deny_if_not_staff_or_admin(request):
 @renderer_classes([TemplateHTMLRenderer,JSONRenderer])
 def book_list(request):
     # Avoid N+1 queries by fetching author and categories with each book
-    books=Book.objects.all().select_related('author').prefetch_related('category')
+    books=_cached_book_list()
     # Track books where the current member cannot re-apply yet.
     member = None
     if request.user.is_authenticated and hasattr(request.user, 'member'):
@@ -77,7 +119,7 @@ def book_list(request):
 def book_details(request,book_id):
     try:
         # Fetch related author and categories to avoid additional queries in the template
-        book=Book.objects.select_related('author').prefetch_related('category').get(pk=book_id)
+        book=_cached_book_detail(book_id)
     except Book.DoesNotExist:
         raise NotFound("Book Not Found")
     
@@ -102,6 +144,7 @@ def AddBook(request):
             form=BookForm(request.POST)
             if form.is_valid():
                 form.save()
+                _invalidate_book_cache()
                 return redirect('book_list')
             else:
                 return Response({'form':form},template_name="lmsApp/book pages/book_form.html",status=status.HTTP_400_BAD_REQUEST)
@@ -109,6 +152,7 @@ def AddBook(request):
             serializer=BookSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
+            _invalidate_book_cache()
             return Response(
                 {'data':serializer.data},status=status.HTTP_201_CREATED,
             )
@@ -136,6 +180,7 @@ def UpdateBook(request,book_id):
             form=BookForm(request.POST,instance=book)
             if form.is_valid():
                 form.save()
+                _invalidate_book_cache()
                 return redirect('book_list')
             else:
                 return Response({'form':form},template_name='lmsApp/book pages/book_form.html',status=status.HTTP_400_BAD_REQUEST)
@@ -143,6 +188,7 @@ def UpdateBook(request,book_id):
             serializer=BookSerializer(book,data=request.data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
+            _invalidate_book_cache()
             return Response({'data':serializer.data},status=status.HTTP_200_OK)
     
     elif request.method=="PATCH":
@@ -157,6 +203,7 @@ def UpdateBook(request,book_id):
             serializer=BookSerializer(book,data=request.data,partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
+            _invalidate_book_cache()
             return Response({'data':serializer.data},status=status.HTTP_200_OK)
     else:
         if request.accepted_renderer.format=="html":
@@ -197,8 +244,10 @@ def DeleteBook(request,book_id):
             )
         
         if request.accepted_renderer.format == "html":
+            _invalidate_book_cache()
             return redirect('book_list')
         
+        _invalidate_book_cache()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
     if request.accepted_renderer.format=="html":
