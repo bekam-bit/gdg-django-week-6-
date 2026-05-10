@@ -1,1 +1,1 @@
-web: gunicorn lmsProject.wsgi:application --bind 0.0.0.0:$PORT
+web: gunicorn lmsProject.wsgi:application --bind 0.0.0.0:$PORT --chdir /opt/render/project/src/Django-gdg-project/my_first_project/lmsProject
