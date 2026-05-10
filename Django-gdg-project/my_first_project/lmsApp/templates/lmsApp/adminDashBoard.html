@@ -12,6 +12,7 @@
     <div class="container">
       <nav class="nav-links">
         <a href="{% url 'home-role' %}">Home</a>
+        <a href="{% url 'book_list' %}">Book List</a>
         <a href="{% url 'book_add' %}">Add Book</a>
         <a href="{% url 'loan_request_list' %}">Staff Requests</a>
         <a href="/admin/">Admin Panel</a>
@@ -27,6 +28,11 @@
     <p>Manage staff, policies, and system-wide settings.</p>
   </div>
   <section class="grid">
+    <div class="card">
+      <h3>Browse books</h3>
+      <p>View the catalog and book details.</p>
+      <a class="btn" href="{% url 'book_list' %}">Book List</a>
+    </div>
     <div class="card">
       <h3>Add a new book</h3>
       <p>Update the catalog and manage inventory.</p>

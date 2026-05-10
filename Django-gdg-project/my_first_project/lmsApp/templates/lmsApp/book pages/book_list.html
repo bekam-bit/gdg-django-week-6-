@@ -40,22 +40,26 @@
           >
             View Details
           </button>
-          <button
-            type="button"
-            class="edit-link"
-            data-url="{% url 'book_update' book.book_id %}"
-            onclick="window.location.href = this.dataset.url"
-          >
-            Edit
-          </button>
-          <button
-            type="button"
-            class="delete-link"
-            data-url="{% url 'book_delete' book.book_id %}"
-            onclick="window.location.href = this.dataset.url"
-          >
-            Delete
-          </button>
+          {% if request.user.is_authenticated %}
+            {% if request.user.role == 'staff' or request.user.role == 'admin' or request.user.is_staff or request.user.is_superuser %}
+            <button
+              type="button"
+              class="edit-link"
+              data-url="{% url 'book_update' book.book_id %}"
+              onclick="window.location.href = this.dataset.url"
+            >
+              Edit
+            </button>
+            <button
+              type="button"
+              class="delete-link"
+              data-url="{% url 'book_delete' book.book_id %}"
+              onclick="window.location.href = this.dataset.url"
+            >
+              Delete
+            </button>
+            {% endif %}
+          {% endif %}
         </div>
       </td>
       <td>

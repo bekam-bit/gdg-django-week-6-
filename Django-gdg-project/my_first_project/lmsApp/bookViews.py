@@ -12,6 +12,27 @@ from django.db.models.deletion import ProtectedError
 from .serrializer import BookSerializer,LoanSerializer
 from .form import BookForm
 
+
+def _is_staff_or_admin(user):
+    if not user.is_authenticated:
+        return False
+    return (
+        getattr(user, "role", None) in {"staff", "admin"}
+        or user.is_staff
+        or user.is_superuser
+    )
+
+
+def _deny_if_not_staff_or_admin(request):
+    if _is_staff_or_admin(request.user):
+        return None
+    if request.accepted_renderer.format == "html":
+        return redirect("login")
+    return Response(
+        {"detail": "Staff or admin access required."},
+        status=status.HTTP_403_FORBIDDEN,
+    )
+
 # Create your views here.
 # def home(request):
 #     return render(request,'lmsApp/home.html')
@@ -71,6 +92,9 @@ def book_details(request,book_id):
 @api_view(['POST','GET'])
 @renderer_classes([TemplateHTMLRenderer,JSONRenderer])
 def AddBook(request):
+    access_denied = _deny_if_not_staff_or_admin(request)
+    if access_denied:
+        return access_denied
     if request.method=="POST":
         if request.accepted_renderer.format=="html":
             form=BookForm(request.POST)
@@ -97,6 +121,9 @@ def AddBook(request):
 @api_view(['PATCH','PUT','POST','GET'])
 @renderer_classes([TemplateHTMLRenderer,JSONRenderer])
 def UpdateBook(request,book_id):
+    access_denied = _deny_if_not_staff_or_admin(request)
+    if access_denied:
+        return access_denied
     try:
         book=Book.objects.get(pk=book_id)
     except Book.DoesNotExist:
@@ -139,6 +166,9 @@ def UpdateBook(request,book_id):
 @api_view(['DELETE','GET','POST'])
 @renderer_classes([TemplateHTMLRenderer,JSONRenderer])
 def DeleteBook(request,book_id):
+    access_denied = _deny_if_not_staff_or_admin(request)
+    if access_denied:
+        return access_denied
     try:
         book=Book.objects.get(pk=book_id)
     except Book.DoesNotExist:

@@ -52,6 +52,25 @@ class LMSEndToEndTests(StaticLiveServerTestCase):
 
 	def setUp(self):
 		self.api_client = APIClient()
+		author, _ = Author.objects.get_or_create(
+			author_name="Test Author",
+			defaults={"author_email": "author@example.com"},
+		)
+		category, _ = Category.objects.get_or_create(category_name="Fiction")
+		self.book, _ = Book.objects.get_or_create(
+			ISBN="ISBN-12345",
+			defaults={
+				"title": "Sample Book",
+				"total_copies": 3,
+				"publication_date": timezone.now().date(),
+				"max_loan_duration": 7,
+				"author": author,
+			},
+		)
+		if self.book.author_id != author.author_id:
+			self.book.author = author
+			self.book.save(update_fields=["author"])
+		self.book.category.add(category)
 		self.staff_user, _ = User.objects.get_or_create(
 			username="staff_user",
 			defaults={"role": "staff"},
@@ -154,6 +173,34 @@ class LMSEndToEndTests(StaticLiveServerTestCase):
 		self.assertEqual(response.status_code, 200)
 		dashboard_response = self.client.get(reverse("staff_dashboard"))
 		self.assertEqual(dashboard_response.status_code, 200)
+
+	def test_staff_and_admin_can_view_book_list(self):
+		self.client.force_login(self.staff_user)
+		staff_response = self.client.get(reverse("book_list"))
+		self.assertEqual(staff_response.status_code, 200)
+		self.assertContains(staff_response, "Edit")
+		self.assertContains(staff_response, "Delete")
+		self.client.logout()
+
+		self.client.force_login(self.admin_user)
+		admin_response = self.client.get(reverse("book_list"))
+		self.assertEqual(admin_response.status_code, 200)
+		self.assertContains(admin_response, "Edit")
+		self.assertContains(admin_response, "Delete")
+
+	def test_member_cannot_see_edit_delete_buttons(self):
+		self.client.force_login(self.member_user)
+		response = self.client.get(reverse("book_list"))
+		self.assertEqual(response.status_code, 200)
+		self.assertNotContains(response, "Edit")
+		self.assertNotContains(response, "Delete")
+
+	def test_member_cannot_see_edit_delete_on_detail(self):
+		self.client.force_login(self.member_user)
+		response = self.client.get(reverse("book_detail", args=[self.book.book_id]))
+		self.assertEqual(response.status_code, 200)
+		self.assertNotContains(response, "Edit")
+		self.assertNotContains(response, "Delete")
 
 	def test_api_health_and_login(self):
 		health_response = self.api_client.get(f"{self.live_server_url}/api/v1/health/")
