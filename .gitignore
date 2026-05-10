@@ -4,3 +4,5 @@ Django-gdg-project/my_first_project/my_first_project/asgi.py
 Django-gdg-project/my_first_project/my_first_project/settings.py
 Django-gdg-project/my_first_project/my_first_project/urls.py
 Django-gdg-project/my_first_project/my_first_project/wsgi.py
+`
+Django-gdg-project/.env.example
